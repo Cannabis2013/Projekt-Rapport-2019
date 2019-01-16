@@ -5,6 +5,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage[danish]{babel} %Benyttes til at oversætte abstract funktionen til dansk.
+\usepackage{biblatex}
 
 % Remove "New paragraph" indentation
 
@@ -51,6 +52,8 @@ Selve kravet til  vores applikation \textit{Snake}, er foruden de givne kravspec
 
 \section{Ansvars fordeling}
 
+\section{Overordnet design og overvejelserne bag}
+
 
 
 \section{Struktur og rollefordelinger}
@@ -77,7 +80,13 @@ Den første klasse der bliver instantiereret er klassen MainView, som udgør pro
 	\label{fig:diagram2}
 \end{figure}
 
-\textit{MainView} har to opgaver som går ud på at kalde de enkelte klassers \textit{draw()} metoder og videresende brugerinput som den opfanger i dens reimplementerede metode \textit{keyPressEvent(KeyEvent event)} nedarvet fra \textit{View}. Dette vil omtales yderligere i detaljer i afsnittet \textit{"Brugen af seperate tråde, og ideén bag det"}.
+Derudover har \textit{MainView} to opgaver:
+\begin{itemize}
+	\item Håndtere optegning af objekter
+	\item Håndtere brugerinput
+\end{itemize}
+
+Den første opgave vil gennemgås i sektionen \textit{"Brugen af seperate tråde, og ideén bag det"} og før vi går til håndteringen af brugerinput redegøres der lige hurtigt for selve spillerfladens opbygning.
 
 \subsubsection{Selve spillerfladens opbygning}
 
@@ -102,12 +111,34 @@ Ideén bag brugen af en seperat tråd til automatisk optegning af grænsefladen,
 
 \subsubsection{Tegne delen}
 
-MainView er klassen der sørger for at  tegne alle objekterne på grænsefladen i den reimplementerede metode \textit{draw()} som den får fra View klassen. Denne metode foretager et kald til de to controller klasser som hver især kalder deres respektive objekters \textit{draw()} metoder, da disse objekter alle er afledte af \textit{View}. Måden denne klasse bliver kaldt på foregår ved hjælp af klassen PaintWorker som er en såkaldt subclass af \textit{java.lang.Thread}\footnote{\textit{java.lang.Thread} er en klasse hvis metode \textit{run()} eksekverer kode i en separat tråd.}  og reimplementerer dens metode \textit{run()}. Alt kode i denne metode afvikles asynkront i en seperat tråd og dens formål er at opdaterer grænsefladen ved at foretage et kald til draw() metoden i MainView et bestemt antal gange i sekundet. Dette antal opdateringer kan så sættes til en bestemt værdi ved metoden \textit{setPollRate()}. Selve strukturen over de forskellige metodekald kan betragtes i følgende illustration:
+MainView er klassen der sørger for at  tegne alle objekterne på grænsefladen i den reimplementerede metode \textit{draw()} som den får fra View klassen. Denne metode foretager et kald til de to controller klasser som hver især kalder deres respektive objekters \textit{draw()} metoder, da disse objekter alle er afledte af \textit{View}. Måden denne klasse bliver kaldt på foregår ved hjælp af klassen PaintWorker som er en subclass\footnote{Et andet ord som betegner en udvidelse af en eksisterende klasse.} af \textit{java.lang.Thread}\footnote{\textit{java.lang.Thread} er en klasse hvis metode \textit{run()} eksekverer kode i en seperat tråd.}  og reimplementerer dens metode \textit{run()}. Alt kode i denne metode afvikles asynkront i en seperat tråd og dens formål er at opdaterer grænsefladen ved at foretage et kald til draw() metoden i MainView et bestemt antal gange i sekundet. Dette antal opdateringer kan så sættes til en bestemt værdi ved metoden \textit{setPollRate()}. Selve strukturen over de forskellige metodekald kan betragtes i følgende illustration:
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=250px]{Draw_sequence.jpg}
 	\label{fig:diagram2}
 \end{figure}
+
+Antallet af opdateringer bestemmes ud fra et kald til \textit{Thread.sleep(long ms)} hvor sætter antallet af opdateringer per sekund. Nærmere beskrevet ud fra følgende:
+
+\begin{center}
+	$ ms = \frac{1000}{Pollrate()}  $
+\end{center}
+
+\pagebreak
+En anden illustration kan betragtes her hvor klasserne er inddelt i de forskellige tråde:
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=250px]{Thread_diagram.jpg}
+	\label{fig:thread}
+\end{figure}
+
+I vores avancerede udgave af \textit{Snake} animeres slangens bevægelser og brugerinput bestemmer nu slangens orientering. Denne animation foregår ved hjælp af klassen \textit{ObjectAnimator} men dette vil omtales i et seperat afsnit vedrørende \textit{AdvancedSnake}.
+
+\section{Den avancerede variant af \textit{Snake}}
+I den avancerede udgave af vores computerspil bliver der som før beskrevet indført animationer. Dette, samt mere, medfører lidt mindre strukturelle ændringer med indførelsen af nye over-klasser. 
+
+
 
 \end{document}          
