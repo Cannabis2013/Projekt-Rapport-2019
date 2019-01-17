@@ -167,6 +167,9 @@ I den avancerede udgave af \textit{SimpleSnake} bliver følgende tilføjet:
 	
 	Denne del var klart den sværeste del af udforme i det slangens position ændres med værdier med mange decimaler hvilket gjorde det udfordrende at fastholde slangen i gitteret. Dette gøres ved at \textit{ObjectAnimator} kalder (som illustreret ved ovenstående illustration) metoden \textit{MoveEvent(double,double)} i \textit{GameController} som står for at tjekke om den nye position er lovlig eller om der er kollisioner af en eller anden art. Vi blev nød til i denne fase at oprette en metode i \textit{LevelObject} der går fra interne koordinater ud til de globale koordinater for bedre at kunne tjekke om slangen kolliderer med sig selv eller maddingen. Slangen får også tilføjet en ny liste der består af såkaldte \textit{relative koordinater} for bedre at kunne tjekke om der rent faktisk sker en kollision. Grunden til dette skal findes i, at slangens oprindelige liste nu består af et meget stort antal kvadrater for at sikre den flydende animation. Det gav nogle udfordringer når man skulle sammenligne koordinaterne.\\
 	
+	\subsection{Musik og lyd effekter}
+	
+	Musik og lyd effekter er implementeres ved hjælp af \textit{javafx.}
 
 \section{Udfordringer og endelig evaluering af produkt}
 
