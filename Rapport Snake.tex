@@ -54,6 +54,9 @@ Selve kravet til  vores applikation \textit{Snake}, er foruden de givne kravspec
 
 \section{Overordnet design og overvejelserne bag}
 
+\subsection{Lidt om slangens opbygning og design}
+
+Slangen repræsenteres af \textit{SnakeObject} og består i bund og grund af en liste med koordinater af typen \textit{PointD}. \textit{PointD} er en klasse vi lavede der bedst kan beskrives som en \textit{Point} klasse med koordinater af typen \textit{double}. Når slangen i \textit{SimpleSnake} rykker sig et skridt tilføjes en ny koordinat til listen og den sidste koordinat fjernes. Når så slangen spiser en madding forhindres listen i at fjerne sit sidste element og slangens længde inkrementeres derfor med 1 kvadrat hver gang.
 
 
 \section{Struktur og rollefordelinger}
@@ -131,13 +134,43 @@ En anden illustration kan betragtes her hvor klasserne er inddelt i de forskelli
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=250px]{Thread_diagram.jpg}
-	\label{fig:thread}
+	\label{fig:thread}5
 \end{figure}
 
-I vores avancerede udgave af \textit{Snake} animeres slangens bevægelser og brugerinput bestemmer nu slangens orientering. Denne animation foregår ved hjælp af klassen \textit{ObjectAnimator} men dette vil omtales i et seperat afsnit vedrørende \textit{AdvancedSnake}.
+
 
 \section{Den avancerede variant af \textit{Snake}}
-I den avancerede udgave af vores computerspil bliver der som før beskrevet indført animationer. Dette, samt mere, medfører lidt mindre strukturelle ændringer med indførelsen af nye over-klasser. 
+I den avancerede udgave af \textit{SimpleSnake} bliver følgende tilføjet:
+\begin{itemize}
+	\item Splash screen \\
+	En simpel intro skærm hvor brugeren trykker sig videre til selve spillet.
+	\item Flydende animationer \\
+	Slangen bevæger sig uden brug af brugerinput
+	\item Lyd effekter og baggrundsmusik \\
+	Lydeffekter og musik er baseret på det gamle computerspil Doom.
+	
+\end{itemize}
+	
+	\subsection{Splash screen}
+	
+	Klassen \textit{IntroScreen} fungerer nu som applikationens indgangs klasse i det det både tager mod kommandolinje argumenterne og starter selve spillet ved brugerinput. 
+	
+	\subsection{Mere tråde}
+	
+	De flydende animationer foregår i en seperat tråd håndteret af \textit{ObjectAnimator}. I denne variant af spillet er der oprettet en ny klasse \textit{Worker} som både \textit{PaintWorker} og \textit{ObjectAnimator} er afledte af. Princippet er ikke så meget anderledes og foregår på samme måde som \textit{PaintWorker}'s opdatering er grænsefladen. Der er bare tale om en tilføjelse af en ny tråd der startes i \textit{GameController} og fungerer som illustreret nedenfor:
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=250px]{Thread_diagram_2.jpg}
+		\label{fig:thread2}5
+	\end{figure}
+	
+	Denne del var klart den sværeste del af udforme i det slangens position ændres med værdier med mange decimaler hvilket gjorde det udfordrende at fastholde slangen i gitteret. Dette gøres ved at \textit{ObjectAnimator} kalder (som illustreret ved ovenstående illustration) metoden \textit{MoveEvent(double,double)} i \textit{GameController} som står for at tjekke om den nye position er lovlig eller om der er kollisioner af en eller anden art. Vi blev nød til i denne fase at oprette en metode i \textit{LevelObject} der går fra interne koordinater ud til de globale koordinater for bedre at kunne tjekke om slangen kolliderer med sig selv eller maddingen. Slangen får også tilføjet en ny liste der består af såkaldte \textit{relative koordinater} for bedre at kunne tjekke om der rent faktisk sker en kollision. Grunden til dette skal findes i, at slangens oprindelige liste nu består af et meget stort antal kvadrater for at sikre den flydende animation. Det gav nogle udfordringer når man skulle sammenligne koordinaterne.\\
+	
+
+\section{Udfordringer og endelig evaluering af produkt}
+
+Et af de helt store udfordringer har helt klart været i forbindelse slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde. Det giver nogle meget grimme værdier og ved tjek af kollisioner rundes der ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}.
 
 
 
