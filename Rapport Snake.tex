@@ -33,166 +33,169 @@
 
 
 \begin{document}
-
-% Forsiden
-\maketitle
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=\linewidth]{Snake_pic.jpg}
-	\label{fig:diagram}
-\end{figure}
-
-\pagebreak % Forsiden stop
-
-\begin{abstract}
-
-Denne rapport indeholder en beskrivelse af de metoder og designvalg der førte til vores applikation \textit{Snake}. Dokumentet søger i grove træk at afdække programmets struktur og de overvejleser der lå til grund for denne og andre designtiltag. Derfor startes ud med en redegørelse for kravspecifikation og de tanker det automatisk medførte. Dernæst gøres der rede for den overordnede struktur i programmet med fokus på polyformi, design og implementation, og efterfølgende argumenteres der for de valg vi har taget undervejs i processen med henblik på en afsluttende vurdering af de udfordringer og problematikker der var under udarbejdelsen af \textit{Snake}. Afslutningsvist rundes af med en konklusion hvor kravspecifikation og endeligt resultat udmåles.	
 	
-\end{abstract}
-
-\pagebreak % Resume stop
-\tableofcontents
-
-\pagebreak
-\section{Indledning}
-
-Alle kan huske de gamle tider hvor den store producent af mobiltelefoner hed Nokia og især et spil gjorde sig gældende når det handlede om at fordrive tiden hvad enten man sad i toget, bussen eller til en kedelig forsamling af brogede mennesker. Spillet var simpelt og gjaldt om at styre en slange rundt i en bane og opfange en prik der repræsenterede en madding. Spillet var simpelt og som konskekvens af dette ramte det meget bredt. Spillet findes dog i mange variationer men i denne rapport omtales primært den simple variant kendt fra Nokia 3210/3310. For mange gange er simplicitet og uniformitet en god kombination i det at det har en appellerende effekt på den brede masser. Af den grund vil det også være et af de bærende elementer i vores spil \textit{SimpleSnake} der er simpelt i sin udformning og har fokus på afvikling på en lang række skærmstørrelser. Det skal være visuelt mangfoldigt og samtidig være sjovt, og det er det vi prøver at tilstræbe med vores version af \textit{SimpleSnake}. 
-
-\subsection{Kravspecifikation og problemstilling}
-
-Selve kravet til  vores applikation \textit{Snake}, er foruden de angivne kravspecifikationer, at det i første omgang skal følge konceptet fra det klassiske Snake spil kendt fra den gamle mobiltelefon Nokia 3310. Dvs. en slange bevæger sig på en bane (en såkaldt \textit{torus}) og skal spise en madding i form af kollision mellem denne og slangen. Banens grænser er udefineret i den forstand at slangen aldrig helt forlader banen i det at ved udtræden via banens fire sider genindtrædes denne fra den modsatte side. Slangen bevæges ved hjælp af input fra brugeren i form af tastatur input hvor slangen rykkes et felt i ønsket retning. Banen består af et antal kolonner og rækker der fastsættes ved kommando linje parametre ved programmets opstart, og dette rejser så en problemstilling i forhold til de enkeltes felters geometriske design. Skal det være rektangler med parvis ens sidelængder eller kvadrater med ens sidelængder? Målet med vores applikation er muligheden for eksekvering på tværs af forskellige skærme, hvad enten det afvikles på en stationær computer med tilhørende full hd skærm eller en lille bærbar med en skærm ved standard hd opløsning\footnote{Her tænkes på opløsninger ved 1280x800 eller mindre.} og yderemere skabe en visual repræsentation af slangen der er hensigtsmæssig i en kosmetisk forstand. 
-
-\section{Ansvars fordeling}
-
-Projektet er udarbejdet i fællesskab uden nærmere definerede ansvarsområder. Det hele er sket i samråd med hinanden og vi har hver især bidraget til design og implementation.
-
-\section{Overordnet design og overvejelserne bag}
-
-Et af udfordringerne ved design af et program og dens dertilhørende kode, omhandler forruden den visuelle del af programmet også den bagved liggende struktur (selve implementationen). Vi ønskede et design hvor der var fokus på simplicitet og uniformitet. Det første giver sig udtryk i vores opdeling af kodestrukturen, en opdeling der kommer til udtryk ved benyttelsen af såkaldte \textit{Kits}. Et \textit{Kit} er bare vores udtryk for en \textit{package}\footnote{En java package er et domæne bestående af et eller flere klasser og for dem med kendskab til c++ kan der henføres til namespace som benyttes til at kende forskel på de forskellige klasser I de tilfælde de deler samme navn.} hvor vi inddeler vores program i nogle forskellige lag. Det første lag danner fundamentet for alle vores klasser og forefindes i \textit{BaseKit}, det er for at sige det på jævnt sprog, applikationens maskinrum. Hele ideen er at indkapsle maskinrummet fra design delen for på den måde at gøre det mere simpelt at designe og implementere de enkelte dele. De to vigtigste klasser i dette \textit{Kit} er \textit{Object} og \textit{View} hvorved den sidste står for at håndtere brugerinput, position, dimension og tegning af grænseflade. Den første del tager sig så af meta-information og et koncept vi kalder \textit{Parent and Child}, som vil omtales i det næste kapitel.
-\subsection{Problematikken vedrørende callbacks}
-En af vores overvejelser omhandlede selve delen omkring klassernes indbyrdes kommunikation. Det kan koges ned til problematikken omkring \textit{callbacks}\footnote{Callback er et udtryk for en funktion der kalder tilbage til den klasse der oprindeligt enten instantierede den eller kaldte den.}. Der var nogle forskellige løsninger på bordet, hvad enten klasser skulle parses med over i de instantierede klasser eller om vi skulle udvikle en struktur hvor klasser nemt kunne kaldes. Det er klart der er fordele og ulemper ved de forskellige løsninger, og fordelen ved at parse klasser (som jo bare er adresser til disse) i \textit{constructors} er helt klart \textit{performance} relateret. På den anden side stiller det også krav til det overordnede design og ved kald til flere såkaldte \textit{controller} klasser ville vi skulle implementere \textit{constructore} med mange argumenter. Den anden løsning vi havde på bordet var oprettelsen af en struktur vi kalder \textit{Parent and Child konceptet}. Denne hierarkiske struktur gør at alle objekter enten er \textit{parent} til et objekt eller \textit{child} af et objekt. Der er helt klart peformance mæssige udfordringer ved denne tilgang men tilgengæld kan klasser nu nemt søges op ved hjælp af et tildelt alias som klassen \textit{Object} håndterer. Vi tænkte, at ud fra programmets størrelse virkede den sidste løsning meget appellerende da det talte ind til vores simplicitets tankegang. 
-\subsubsection{Parent and Child}
-\pagebreak
-Selve ideen ved \textit{Parent and Child} kan udtrykkes ved følgende illustration:
-
-\begin{figure}[h!]
+	% Forsiden
+	\maketitle
 	
-	\centering
-	\includegraphics[width=200px]{Object_hierarchy.jpg}
-	\label{fig:hierarchy}
-	\caption{Objekt domæne}
-\end{figure}
-
-Vi har en instans af \textit{View} som indeholder en liste af \textit{View} objekter. Denne liste kan så ved et kald til relevant metode søges op af de andre \textit{controller} klasser ved hjælp af nedarvet funktionalitet fra \textit{Object}. Det er stort set hele strukturen i konceptet og ligger til grund for \textit{SimpleSnake}.
-
-
-\subsection{Lidt om slangens opbygning og design}
-
-Slangen repræsenteres af \textit{SnakeObject} og består i bund og grund af en liste med koordinater af typen \textit{PointD}. \textit{PointD} er en klasse vi lavede der bedst kan beskrives som en \textit{Point} klasse med koordinater af typen \textit{double}. Når slangen i \textit{SimpleSnake} rykker sig et skridt tilføjes en ny koordinat til listen og den sidste koordinat fjernes. Når så slangen spiser en madding forhindres listen i at fjerne sit sidste element og slangens længde inkrementeres derfor med 1 kvadrat hver gang.
-
-
-\section{Struktur og rollefordelinger}
-
-I den her sektion beskrives computerspillets polyformi og brug af nedarvning. Derudover redegøres der for de forskellige klassers roller og funktioner, og specielt brugen af threading omtales, da dette spiller en fundamental rolle i afviklingen af computerspillet Snake\footnote{Her refereres både til den simple variant, \textit{SimpleSnake}, og den mere avancerede del, \textit{AdvancedSnake}.}. For en oversigt over hele applikationens struktur henvises til figuren "\textit{\hyperref[fig:structure]{Overordnet struktur}}" som kan findes på sidste side.
-Selve spillet er opdelt i to dele, nærmere betegnet indeholder det to såkaldte pakker , BaseKit og MainKit. Den første udgør spillets fundament, da de fleste klasser i pakken \textit{MainKit} er nedarvet fra klasser i \textit{BaseKit} og sørger for grundfunktionaliteten i programmet. Det vil omtales i detaljer i den næste sektion hvor der vil gås nærmere ind på de forskellige abstraktionslag i Snake med hensyn til indhold og anvendelse af dette, specielt i forhold til objekternes indbyrdes kommunikation. Den følgende illustration viser programmets polyformiske struktur inddelt i de to abstraktionsniveauer:
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=200px]{Abstraktions_diagram.jpg}
-	\label{fig:diagram}
-	\caption{Abstraktionslag}
-\end{figure}
-
-\subsection{Det indledende abstraktionsniveau}
-Næsten alle klasser i Snake nedarver fra klassen \textit{Object} hvis primære funktion er at forsyne klasserne med meta-information\footnote{Information der beskriver noget om klassen selv og i dette tilfælde sker dette ved at tildele klassen et alias af typen \textit{String}}. På denne måde kan klasserne nemt findes ved hjælp af et koncept i denne rapport omtales som \textit{Parent and Child}. Dette koncept udgør en grundlæggende del af programmets struktur hvor objekter enten er \textit{children} af et objekt, eller et objekts \textit{parent}. Når et objekt tildeles parent status, tilføjes dens child til en liste af childrens som kan søges op senere hen i programmets forløb. Denne struktur er nyttig når der skal foretages callbacks i de tilfælde hvor klasser og objekter har behov for at udvekse information; f.eks. når klassen der repræsenterer slangen har behov for at sætte sine dimensioner eller Scoreboard skal opdateres.
-Den klasse der implementerer \textit{Parent and Child} konceptet er \textit{View}, som er moderklassen for alle de objekter der visuelt repræsenteres på skærmen. Alle afledte klasser af denne klasse reimplementerer hver især \textit{draw()} som gør det enkelt og hurtigt at tegne en samling af objekter, hvad enten det er non-interaktive objekter som spillerflade og dens tilhørende objeker, eller semi-interaktive og interaktive objekter, som slangen eller maddingen\footnote{Med non-interaktive objekter menes der objekter der enten er fast inventar på spillerfladen eller objekter der ikke har direkte relation til objekter der agerer efter spiller input. Mål objektet som slangen skal opsluge er  dog ikke medtaget her men betegnes som et semi-interaktivt objekt da den har indvirkning på spiller objektet.}.  Derudover indeholder \textit{View} metoder og egenskaber der relaterer sig til objekters positioner på skærmen og dimensioner samt håndtering af brugerinput i form af interaktion via mus og tastatur. Det foregår ved hjælp af såkaldte eventhandlers som hver især kalder relevante metoder der kan reimplementeres af de afledte klasser. Den allervigtigste rolle View dog udfylder er opsætning og tegning af hele brugergrænsefladen\footnote{Her tænkes på alle visuelle objekter.}. Alle klasser der er afledt af \textit{View} har adgang til et \textit{painter} objekt af typen \textit{GraphicsContext}. Denne \textit{painter} er objektets malerpensel og initialiseres enten fra et Canvas objekt, der bedst kan beskrives som tegnebrættet, eller objektets \textit{parent}'s Canvas objekt.
-
-\subsection{Det andet, og primære, abstraktionsniveau}
-Den første klasse der bliver instantiereret er klassen MainView, som udgør programmets centrale klasse. Denne klasse indeholder de forskellige controller klasser der hver især tager sig af håndtering og tegning af henholdsvis spillerfladen, spillets gang og objekterne. En kort oversigt over strukturen indenfor domænet \textit{MainKit} kan illustereres i følgende figur:
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=200px]{Domain_diagram.jpg}
-	\label{fig:diagram2}
-	\caption{Domæne diagram 2}
-\end{figure}
-
-Derudover har \textit{MainView} to opgaver:
-\begin{itemize}
-	\item Håndtere optegning af objekter
-	\item Håndtere brugerinput
-\end{itemize}
-
-Den første opgave vil gennemgås i sektionen \textit{"Brugen af seperate tråde, og ideén bag det"} og før vi går til håndteringen af brugerinput redegøres der lige hurtigt for selve spillerfladens opbygning.
-
-\subsubsection{Selve spillerfladens opbygning}
-
-Selve spillerfladen består af et $r \times n$ gitter opdelt i kvadrater og tegnes i klassen \textit{LevelObject}. Banen optegnes ud fra nogle parametre som antallet af kolonner, rækker og grænsefladens dimensioner. Specielt dimensionerne på de kvadrater der udgør gitteret bestemmes relativt ud fra grænsefladens højde, for på den måde at bibeholde en identisk skalering ved forskellige valg af rækker og kolonner. Dette tjener også som formål at sikre en uniform repræsentation ved forskellige skærmopløsninger. Dette omtales i et senere kapitel med henblik på de overvejelser der ligger til grund for dette valg.
-
-\subsubsection{Håndtering af brugerinput}
-
-Selve interaktionen foregår ved hjælp af tastatur input fra brugeren hvorved denne danner basis for slangens bevægelser. Programmets gang styres enten af piletasterne eller andre taster, og kombinationer af modifikations tasterne og ordinære taster. Selve håndteringen af disse brugerinputs står klassen MainView for, der ved hjælp af metoden keyPressEvent(KeyEvent) videresender et \textit{javafx.scene.input.KeyCode}  objekt til GameController der derved på baggrund af den tast brugeren har trykket kalder de relevante metoder. Dette kan illustreres i nedenstående figur:
-
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=\linewidth]{Event_sequence.jpg}
-	\label{fig:Event}
-	\caption{Event sekvens}
-\end{figure}
-
-\textit{GameController} er klassen der styrer spillets gang og sørger for at håndtere kollisioner, opdatere slangens position og reinitialisere positionen når slangen befinder sig i grænseområderne. Det sidste foregår ved hjælp af det førnævnte \textit{Parent and Child} koncept, hvor \textit{GameController} foretager et metodekald til en af sine nedarvede metoder \textit{object(String)} der ud fra den tildelte meta information, returnere selve baneobjektet \textit{LevelObjekt}. Dette baneobjekt tildeler slangen, som repræsenteres af klassen \textit{SnakeObjekt}, sine dimensioner som den får fra metoden \textit{BlockSize()}.\\
-
-\section{Brugen af seperate tråde, og ideén bag det}
-
-Ideén bag brugen af en seperat tråd til automatisk optegning af grænsefladen, bunder i en tanke om kun at skulle opdatere de enkelte semi- og interaktive objekters positioner på spillerfladen uden brug af gentagende kald til deres respektive \textit{draw()} metoder. Her kommer polyformien også ind og spiller en rolle i det alle afledte instanser af \textit{View} hver især reimplementerer \textit{draw()}. Dette gør objekterne på grænsefladen velegnet til brug i lister hvor controller klasserne kan nøjes med at oprette lister af typen \textit{View} og gennemløbende kalde \textit{draw()}, uden rigtig at kende den specifikke type på objektet. 
-
-\subsubsection{Tegne delen}
-
-MainView er klassen der sørger for at  tegne alle objekterne på grænsefladen i den reimplementerede metode \textit{draw()} som den får fra View klassen. Denne metode foretager et kald til de to controller klasser som hver især kalder deres respektive objekters \textit{draw()} metoder, da disse objekter alle er afledte af \textit{View}. Måden denne klasse bliver kaldt på foregår ved hjælp af klassen PaintWorker som er en subclass\footnote{Et andet ord som betegner en udvidelse af en eksisterende klasse.} af \textit{java.lang.Thread}\footnote{\textit{java.lang.Thread} er en klasse hvis metode \textit{run()} eksekverer kode i en seperat tråd.}  og reimplementerer dens metode \textit{run()}. Alt kode i denne metode afvikles asynkront i en seperat tråd og dens formål er at opdaterer grænsefladen ved at foretage et kald til draw() metoden i MainView et bestemt antal gange i sekundet. Dette antal opdateringer kan så sættes til en bestemt værdi ved metoden \textit{setPollRate()}. Selve strukturen over de forskellige metodekald kan betragtes i følgende illustration:
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=250px]{Draw_sequence.jpg}
-	\label{fig:diagram2}
-	\caption{Tegne sekvenser}
-\end{figure}
-
-Antallet af opdateringer bestemmes ud fra et kald til \textit{Thread.sleep(long ms)} som bestemmer antallet af opdateringer per sekund. Nærmere beskrevet ud fra følgende:
-
-\begin{center}
-	$ ms = \frac{1000}{Pollrate()}  $
-\end{center}
-
-\pagebreak
-En anden illustration kan betragtes her hvor klasserne er inddelt i de forskellige tråde:
-
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=250px]{Thread_diagram.jpg}
-	\label{fig:thread}5
-	\caption{Tråde diagram}
-\end{figure}
-
-\section{Den avancerede variant af \textit{Snake}}
-
-I den avancerede udgave af \textit{SimpleSnake}, som nu omtales \textit{AdvancedSnake}, er den oprindelige kravspecifikation blevet udvidet og vi har fået frie tøjler til at designe en variant af \textit{SimpleSnake} efter egne ønsker. 
-
-\subsection{Nye elementer}
-I \textit{AdvancedSnake} er følgende blevet tilføjet:
-\begin{itemize}
-	\item Splash screen \\
-	En simpel intro skærm hvor brugeren trykker sig videre til selve spillet.
-	\item Tekst effekter \\
-	Tekst pop-up's dukker op ved kollision mellem slange og madding og derudover ved endt spil hvor slangen kolliderer med sig selv.
-	\item Flydende animationer \\
-	Slangen bevæger sig uden brug af brugerinput
-	\item Lyd effekter og baggrundsmusik \\
-	Lydeffekter og musik er baseret på det gamle computerspil Doom lavet af Id Software 1993.
-	\item Mulighed for opsætning af bane dimensioner, banefarve, slangefarve m.m via kommandolinje argumenter
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=\linewidth]{Snake_pic.jpg}
+		\label{fig:diagram}
+	\end{figure}
 	
-\end{itemize}
+	\pagebreak % Forsiden stop
+	
+	\begin{abstract}
+		
+		Denne rapport indeholder en beskrivelse af de metoder og designvalg der førte til vores applikation \textit{Snake}. Dokumentet søger i grove træk at afdække programmets struktur og de overvejelser der ligger til grund for denne og andre designtiltag. Derfor startes ud med en redegørelse for kravspecifikation og de betragtninger dette automatisk medførte. Dernæst gøres der rede for den overordnede struktur i programmet med fokus på polyformi, design og implementation, og efterfølgende argumenteres der for de valg vi har taget undervejs i processen med henblik på en afsluttende vurdering af de udfordringer og problematikker der var under udarbejdelsen af \textit{Snake}. Afslutningsvist rundes af med en konklusion hvor kravspecifikation og endeligt resultat udmåles.	
+		
+	\end{abstract}
+	
+	\pagebreak % Resume stop
+	\tableofcontents
+	
+	\pagebreak
+	\section{Indledning}
+	
+	Alle kan huske de gamle tider hvor den store producent af mobiltelefoner hed Nokia og især et spil gjorde sig gældende når det handlede om at fordrive tiden hvad enten man sad i toget, bussen eller til en kedelig forsamling af brogede mennesker. Spillet var simpelt og gjaldt om at styre en slange rundt i en bane og fange en prik der repræsenterede en madding. Spillet var simpelt men engagerende og som konsekvens af dette ramte det meget bredt. Spillet findes dog i mange variationer men i denne rapport omtales primært en simple variant baseret på den kendte fra Nokia 3210/3310. Simpelt, uniformt og engagerende gameplay er en god kombination, som bevidnet af Snakes vedvarende status som klassiker. Netop af denne grund vil de også være bærende elementer i vores spil \textit{SimpleSnake} der er simpelt i sin udformning og har fokus på afvikling på en lang række skærmstørrelser. Det skal være visuelt mangfoldigt og samtidig være sjovt, og det er det vi prøver at tilstræbe med vores version af \textit{SimpleSnake}. 
+	
+	\subsection{Kravspecifikation og problemstilling}
+	
+	Selve kravet til  vores applikation \textit{Snake}, er foruden de angivne kravspecifikationer, at det i første omgang skal følge konceptet fra det klassiske Snake spil kendt fra den gamle mobiltelefon Nokia 3310. Dvs. en slange bevæger sig på en bane (en såkaldt \textit{torus}) og skal spise en madding i form af kollision mellem denne og slangen. Banens grænser er udefineret i den forstand at slangen aldrig helt forlader banen, i det at ved udtræden via banens fire sider genindtrædes denne fra den modsatte side. Slangen bevæges af brugeren ved hjælp af tastaturinput hvor slangen rykkes et felt i ønsket retning. Banen består af et antal kolonner og rækker der fastsættes ved kommando-linje parametre ved programmets opstart, og dette rejser så en problemstilling i forhold til de enkeltes felters geometriske design: Skal det være rektangler med parvis ens sidelængder eller kvadrater med ens sidelængder? Målet med vores applikation er muligheden for eksekvering på tværs af forskellige skærme, hvad enten det afvikles på en stationær computer med tilhørende full hd skærm eller en lille bærbar med en skærm ved standard hd opløsning\footnote{Her tænkes på opløsninger ved 1280x800 eller mindre.} og ydermere skabe en visual repræsentation af slangen som er hensigtsmæssig i en kosmetisk forstand. 
+	
+	\section{Ansvarsfordeling}
+	
+	Projektet er udarbejdet i fællesskab uden nærmere definerede ansvarsområder. Det hele er sket i samråd med hinanden og vi har hver især bidraget til design og implementation.
+	
+	\section{Overordnet design og overvejelser}
+	
+	En af udfordringerne ved design af et program og dens dertilhørende kode omhandler forruden den visuelle del af programmet også den bagved liggende struktur (selve implementationen). Vi ønskede et design hvor der var fokus på simplicitet og uniformitet. Det første giver sig udtryk i vores opdeling af kodestrukturen, en opdeling der kommer til udtryk ved benyttelsen af såkaldte \textit{Kits}. Et \textit{Kit} er bare vores udtryk for en \textit{package}\footnote{En java package er et domæne bestående af et eller flere klasser og for dem med kendskab til c++ kan der henføres til namespace som benyttes til at kende forskel på de forskellige klasser I de tilfælde de deler samme navn.} hvor vi inddeler vores program i nogle forskellige lag. Det første lag danner fundamentet for alle vores klasser og forefindes i \textit{BaseKit}, det er for at sige det på jævnt sprog, applikationens maskinrum. Hele ideen er at indkapsle maskinrummet fra designdelen for på den måde at gøre det mere simpelt at designe og implementere de enkelte dele. De to vigtigste klasser i dette \textit{Kit} er \textit{Object} og \textit{View} hvorved den sidste står for at håndtere brugerinput, position, dimension og tegning af grænseflade. Den første del tager sig så af meta-information og et koncept vi kalder \textit{Parent-Child}, som vil omtales i det næste kapitel.
+	\subsection{Problematikken vedrørende callbacks}
+	En af vores overvejelser omhandlede selve delen omkring klassernes indbyrdes kommunikation. Det kan koges ned til problematikken omkring \textit{callbacks}\footnote{Callback er et udtryk for en funktion der kalder tilbage til den klasse der oprindeligt enten instantierede den eller kaldte den.}. Der var nogle forskellige løsninger på bordet: om klasser skulle parses med over i de instantierede klasser eller om vi skulle udvikle en struktur hvor klasser nemt kunne kaldes. Det er klart der er fordele og ulemper ved de forskellige løsninger, og fordelen ved at parse klasser (som jo bare er adresser til disse) i \textit{constructors} er helt klart performance- relateret. På den anden side stiller det også krav til det overordnede design og ved kald til flere såkaldte \textit{controller}-klasser ville vi få brug for at implementere \textit{constructors} med mange argumenter. Den anden løsning vi havde på bordet var oprettelsen af en struktur vi kalder \textit{Parent-Child konceptet}. Denne hierarkiske struktur gør at alle objekter enten er \textit{parent} til et objekt eller \textit{child} af et objekt. Der er helt klart performance-mæssige udfordringer ved denne tilgang men til gengæld kan klasser nu nemt søges op ved hjælp af et tildelt alias som klassen \textit{Object} håndterer. Vi tænkte, at ud fra programmets størrelse virkede den sidste løsning meget tiltrækkende da det passede godt med vores ønske om simplicitet. 
+	
+	\pagebreak
+	\subsubsection{Parent-Child}
+	
+	Selve ideen ved \textit{Parent-Child} kan udtrykkes ved følgende illustration:
+	
+	\begin{figure}[h!]
+		
+		\centering
+		\includegraphics[width=200px]{Object_hierarchy.jpg}
+		\label{fig:hierarchy}
+		\caption{Objekt domæne}
+	\end{figure}
+	
+	Vi har en instans af \textit{View} som indeholder en liste af \textit{View} objekter. Denne liste kan så ved et kald til relevant metode søges op af de andre \textit{controller} klasser ved hjælp af nedarvet funktionalitet fra \textit{Object}. Det er stort set hele strukturen i konceptet og ligger til grund for \textit{SimpleSnake}.
+	
+	
+	\subsection{Slangens opbygning og design}
+	
+	Slangen repræsenteres af \textit{SnakeObject} og består grundlæggende af en liste med koordinater af typen \textit{PointD}. \textit{PointD} er en klasse vi lavede der bedst kan beskrives som en \textit{Point} klasse med koordinater af typen \textit{double}. Når slangen i \textit{SimpleSnake} rykker sig et skridt tilføjes en ny koordinat til listen og den sidste koordinat fjernes. Når så slangen spiser en madding forhindres listen i at fjerne sit sidste element og slangens længde inkrementeres derfor med 1 kvadrat hver gang.
+	
+	
+	\section{Struktur og rollefordelinger}
+	
+	I denne sektion beskrives computerspillets polyformi og brug af nedarvning. Derudover redegøres der for de forskellige klassers roller og funktioner, og specielt brugen af threading omtales, da dette spiller en fundamental rolle i afviklingen af computerspillet Snake\footnote{Her refereres både til den simple variant, \textit{SimpleSnake}, og den mere avancerede del, \textit{AdvancedSnake}.}. For en oversigt over hele applikationens struktur henvises til figuren "\textit{\hyperref[fig:structure]{Overordnet struktur}}" som kan findes på sidste side.
+	Selve spillet er opdelt i to dele, nærmere betegnet indeholder det to såkaldte pakker , BaseKit og MainKit. Den første udgør spillets fundament, da de fleste klasser i pakken \textit{MainKit} er nedarvet fra klasser i \textit{BaseKit} og sørger for grundfunktionaliteten i programmet. Det vil omtales i detaljer i den næste sektion hvor der vil gås nærmere ind på de forskellige abstraktionslag i Snake med hensyn til indhold og anvendelse af dette, specielt i forhold til objekternes indbyrdes kommunikation. Den følgende illustration viser programmets polyformiske struktur inddelt i de to abstraktionsniveauer:
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=200px]{Abstraktions_diagram.jpg}
+		\label{fig:diagram}
+		\caption{Abstraktionslag}
+	\end{figure}
+	
+	\subsection{Det indledende abstraktionsniveau}
+	Næsten alle klasser i Snake nedarver fra klassen \textit{Object} hvis primære funktion er at forsyne klasserne med meta-information\footnote{Information der beskriver noget om klassen selv og i dette tilfælde sker dette ved at tildele klassen et alias af typen \textit{String}}. På denne måde kan klasserne nemt findes ved hjælp af et koncept i denne rapport omtales som \textit{Parent-Child}. Dette koncept udgør en grundlæggende del af programmets struktur hvor objekter enten er \textit{children} af et objekt, eller et objekts \textit{parent}. Når et objekt tildeles \textit{parent} status, tilføjes dens \textit{child} til en liste af \textit{children} som kan søges op senere i programmets forløb. Denne struktur er nyttig når der skal foretages callbacks i de tilfælde hvor klasser og objekter har behov for at udveksle information; f.eks. når klassen der repræsenterer slangen har behov for at sætte sine dimensioner eller \textit{Scoreboard} skal opdateres.
+	Den klasse der implementerer \textit{Parent-Child} konceptet er \textit{View}, som er moderklassen for alle de objekter der visuelt repræsenteres på skærmen. Alle afledte klasser af denne klasse reimplementerer hver især \textit{draw()} som gør det enkelt og hurtigt at tegne en samling af objekter, hvad enten det er non-interaktive objekter som spillerfladen og dens tilhørende objeker, eller semi-interaktive og interaktive objekter, som slangen eller maddingen\footnote{Med non-interaktive objekter menes der objekter der enten er fast inventar på spillerfladen eller objekter der ikke har direkte relation til objekter der agerer efter spiller input. Målobjektet som slangen skal opsluge er  dog ikke medtaget her men betegnes som et semi-interaktivt objekt da den har indvirkning på spiller objektet.}.  Derudover indeholder \textit{View} metoder og egenskaber der relaterer sig til objekters positioner på skærmen og dimensioner samt håndtering af brugerinput i form af interaktion via mus og tastatur. Dette foregår ved hjælp af såkaldte eventhandlers som hver især kalder relevante metoder der kan reimplementeres af de afledte klasser. Den vigtigste rolle \textit{View} dog udfylder er opsætning og tegning af hele brugergrænsefladen\footnote{Her tænkes på alle visuelle objekter.}. Alle klasser der er afledt af \textit{View} har adgang til et \textit{painter} objekt af typen \textit{GraphicsContext}. Denne \textit{painter} er objektets malerpensel og initialiseres enten fra et \textit{Canvas} objekt, der bedst kan beskrives som et tegnebræt, eller objektets \textit{parent}'s \textit{Canvas} objekt.
+	
+	\subsection{Det andet, og primære, abstraktionsniveau}
+	Den første klasse der bliver instantiereret er klassen \textit{MainView}, som udgør programmets centrale klasse. Denne klasse indeholder de forskellige controller klasser der hver især tager sig af håndtering og tegning af henholdsvis spillerfladen, spillets gang og objekterne. En kort oversigt over strukturen indenfor domænet \textit{MainKit} kan illustereres i følgende figur:
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=200px]{Domain_diagram.jpg}
+		\label{fig:diagram2}
+		\caption{Domæne diagram 2}
+	\end{figure}
+	
+	Derudover har \textit{MainView} to opgaver:
+	\begin{itemize}
+		\item Håndtere tegning af objekter
+		\item Håndtere brugerinput
+	\end{itemize}
+	
+	Den første opgave vil blive gennemgået i sektionen \textit{"Brugen af separate tråde"}, og før vi går til håndteringen af brugerinput redegøres der hurtigt for selve spillerfladens opbygning.
+	
+	\subsubsection{Selve spillerfladens opbygning}
+	
+	Selve spillerfladen består af et $r \times n$ gitter opdelt i kvadrater og tegnes i klassen \textit{LevelObject}. Banen optegnes ud fra parametre som antallet af kolonner, rækker og grænsefladens dimensioner. Specielt dimensionerne på de kvadrater der udgør gitteret bestemmes relativt ud fra grænsefladens højde, for på den måde at bibeholde en identisk skalering ved forskellige valg af rækker og kolonner. Dette tjener også til at sikre en uniform repræsentation ved forskellige skærmopløsninger. Dette omtales i et senere kapitel med henblik på de overvejelser der ligger til grund for dette valg.
+	
+	\subsubsection{Håndtering af brugerinput}
+	
+	Selve interaktionen foregår ved hjælp af tastatur input fra brugeren hvorved denne danner basis for slangens bevægelser. Programmets gang styres enten af piletasterne eller andre taster, og kombinationer af modifikations tasterne og ordinære taster. Selve håndteringen af disse brugerinputs bliver varetaget af klassen \textit{MainView}, der ved hjælp af metoden keyPressEvent(KeyEvent) videresender et \textit{javafx.scene.input.KeyCode}  objekt til \textit{GameController} der derved på baggrund af den tast brugeren har trykket kalder de relevante metoder. Dette kan illustreres i nedenstående figur:
+	
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=\linewidth]{Event_sequence.jpg}
+		\label{fig:Event}
+		\caption{Event sekvens}
+	\end{figure}
+	
+	\textit{GameController} er klassen der styrer spillets gang og sørger for at håndtere kollisioner, opdatere slangens position og reinitialisere positionen når slangen befinder sig i grænseområderne. Det sidste foregår ved hjælp af det førnævnte \textit{Parent-Child} koncept, hvor \textit{GameController} foretager et metodekald til en af sine nedarvede metoder \textit{object(String)} der ud fra den tildelte meta-information, returnere selve baneobjektet \textit{LevelObjekt}. Dette baneobjekt tildeler slangen, som repræsenteres af klassen \textit{SnakeObjekt}, sine dimensioner som den får fra metoden \textit{BlockSize()}.\\
+	
+	\section{Brugen af separate tråde.}
+	
+	Ideén bag brugen af en separat tråd til automatisk optegning af grænsefladen, bunder i en tanke om kun at skulle opdatere de enkelte semi- og interaktive objekters positioner på spillerfladen uden brug af gentagende kald til deres respektive \textit{draw()} metoder. Her kommer polyformien også ind og spiller en rolle da alle afledte instanser af \textit{View} hver især reimplementerer \textit{draw()}. Dette gør objekterne på grænsefladen velegnet til brug i lister hvor controller-klasserne kan nøjes med at oprette lister af typen \textit{View} og gennemløbende kalde \textit{draw()}, uden rigtig at kende den specifikke type på objektet. 
+	
+	\subsubsection{Tegnedelen}
+	
+	\textit{MainView} er klassen der sørger for at  tegne alle objekterne på grænsefladen i den reimplementerede metode \textit{draw()} som den får fra \textit{View}-klassen. Denne metode foretager et kald til de to controller klasser som hver især kalder deres respektive objekters \textit{draw()} metoder, da disse objekter alle er afledte af \textit{View}. Måden denne klasse bliver kaldt på foregår ved hjælp af klassen PaintWorker som er en subclass\footnote{Et andet ord som betegner en udvidelse af en eksisterende klasse.} af \textit{java.lang.Thread}\footnote{\textit{java.lang.Thread} er en klasse hvis metode \textit{run()} eksekverer kode i en separat tråd.}  og reimplementerer dens metode \textit{run()}. Al kode i denne metode afvikles asynkront i en separat tråd og dens formål er at opdatere grænsefladen ved at foretage et kald til draw() metoden i \textit{MainView} et bestemt antal gange i sekundet. Dette antal opdateringer kan så sættes til en bestemt værdi ved metoden \textit{setPollRate()}. Selve strukturen over de forskellige metodekald kan betragtes i følgende illustration:
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=250px]{Draw_sequence.jpg}
+		\label{fig:diagram2}
+		\caption{Tegnesekvenser}
+	\end{figure}
+	
+	Antallet af opdateringer bestemmes ud fra et kald til \textit{Thread.sleep(long ms)} som bestemmer antallet af opdateringer per sekund. Nærmere beskrevet ud fra følgende:
+	
+	\begin{center}
+		$ ms = \frac{1000}{Pollrate()}  $
+	\end{center}
+	
+	\pagebreak
+	En anden illustration kan betragtes her hvor klasserne er inddelt i de forskellige tråde:
+	
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=250px]{Thread_diagram.jpg}
+		\label{fig:thread}5
+		\caption{Tråde diagram}
+	\end{figure}
+	
+	\section{Den avancerede variant af \textit{Snake}}
+	
+	I den avancerede udgave af \textit{SimpleSnake}, som nu omtales \textit{AdvancedSnake}, er den oprindelige kravspecifikation blevet udvidet og vi har fået frie tøjler til at designe en variant af \textit{SimpleSnake} efter egne ønsker. 
+	
+	\subsection{Nye elementer}
+	I \textit{AdvancedSnake} er følgende blevet tilføjet:
+	\begin{itemize}
+		\item \textbf{Splash screen} \\
+		En simpel introskærm hvor brugeren trykker sig videre til selve spillet.
+		\item \textbf{Tekst} \\
+		Tekst pop-up's dukker op ved kollision mellem slange og madding og derudover ved endt spil hvor slangen kolliderer med sig selv.
+		\item \textbf{Flydende animationer} \\
+		Slangen bevæger sig uden brug af brugerinput.
+		\item \textbf{Lydeffekter og baggrundsmusik} \\
+		Lydeffekter og musik er baseret på det gamle computerspil Doom lavet af Id Software 1993.
+		\item \textbf{Nemmere brugermodifikation}
+		Mulighed for opsætning af banedimensioner, banefarve, slangefarve m.m via kommandolinje argumenter.
+		
+	\end{itemize}
 	
 	\subsection{Splash screen}
 	
@@ -202,10 +205,10 @@ I \textit{AdvancedSnake} er følgende blevet tilføjet:
 	
 	Der er indført en ny \textit{controller} klasse, \textit{OverLayController}, som tager sig af overlay effekter som tekst pop-ups ved forskellige begivenheder. Denne controller har metoden \textit{showtext(String,double,double,int,double,int)}, som ved hjælp klassens \textit{parent} tegner tekst ved angivne positioner. Metoden findes i to varianter, hvor den ene involverer brugen af \textit{java.util.Timer} objekt der selv sørger for at fjerne teksten igen; den anden variant udelader dette.
 	
-	\subsection{Mere tråde}
+	\subsection{Flere tråde}
 	\subsubsection{Flydende bevægelser}
 	
-	De flydende animationer foregår i en seperat tråd håndteret af \textit{ObjectAnimator}. I denne variant af spillet er der oprettet en ny klasse \textit{Worker} som både \textit{PaintWorker} og \textit{ObjectAnimator} er afledte af. Princippet er ikke så meget anderledes og foregår på samme måde som \textit{PaintWorker}'s opdatering er grænsefladen. Der er bare tale om en tilføjelse af en ny tråd der startes i \textit{GameController} og fungerer som illustreret nedenfor:
+	De flydende animationer foregår i en separat tråd håndteret af \textit{ObjectAnimator}. I denne variant af spillet er der oprettet en ny klasse \textit{Worker} som både \textit{PaintWorker} og \textit{ObjectAnimator} er afledte af. Princippet foregår på samme måde som \textit{PaintWorker}'s opdatering er grænsefladen. Der er bare tale om en tilføjelse af en ny tråd der startes i \textit{GameController} og fungerer som illustreret i figur 7.
 	
 	\begin{figure}[h!]
 		\centering
@@ -214,50 +217,51 @@ I \textit{AdvancedSnake} er følgende blevet tilføjet:
 		\caption{Tråd diagram 2}
 	\end{figure}
 	
-	Denne del var klart den sværeste del af udforme i det slangens position ændres med værdier med mange decimaler hvilket gjorde det udfordrende at fastholde slangen i gitteret. Dette gøres ved at \textit{ObjectAnimator} kalder (som illustreret ved ovenstående illustration) metoden \textit{MoveEvent(double,double)} i \textit{GameController} som står for at tjekke om den nye position er lovlig eller om der er kollisioner af en eller anden art. Vi blev nød til i denne fase at oprette en metode i \textit{LevelObject} der går fra interne koordinater ud til de globale koordinater for bedre at kunne tjekke om slangen kolliderer med sig selv eller maddingen. Slangen får så også derfor tilføjet en ny liste der består af såkaldte \textit{relative koordinater} for bedre at kunne tjekke om der rent faktisk sker en kollision. Grunden til dette skal findes i, at slangens oprindelige liste nu består af et meget stort antal kvadrater for at sikre den flydende animation. Det gav nogle udfordringer når man skulle sammenligne koordinaterne.\\
+	Denne del var klart den sværeste del at udforme idet slangens position ændres med værdier med mange decimaler hvilket gjorde det udfordrende at fastholde slangen i gitteret. Dette gøres ved at \textit{ObjectAnimator} kalder (som illustreret ved ovenstående illustration) metoden \textit{MoveEvent(double,double)} i \textit{GameController} som står for at tjekke om den nye position er lovlig eller om der er kollisioner af en eller anden art. Vi blev nød til i denne fase at oprette en metode i \textit{LevelObject} der går fra interne koordinater ud til de globale koordinater for bedre at kunne tjekke om slangen kolliderer med sig selv eller maddingen. Slangen får så også derfor tilføjet en ny liste der består af såkaldte \textit{relative koordinater} for bedre at kunne tjekke om der rent faktisk sker en kollision. Grunden til dette skal findes i, at slangens oprindelige liste nu består af et meget stort antal kvadrater for at sikre den flydende animation. Det gav nogle udfordringer når man skulle sammenligne koordinaterne.\\
 	
 	\subsubsection{Note vedrørende brugerinput og slangens opførsel}
 	
-	En lille udfordring med hensyn til slangens opførsel i forhold til den nye struktur, hvor slangen animeres flydende, var at man ved en hurtig kombination af tryk på piletasterne kunne få slangen til at dø, da denne kombination havde en tendens til at omgå vores metode tjek til ikke at kunne bevæge sig i en strengt modsatrettet bevægelse. Derfor var vi nødsaget til at ændre lidt på den måde slangen ændrer retning på hvilket i nogle tilfælde, især hvor tempoet er højt, medfører det man fra gamer verden kender som \textit{ghosting og key-jamming} \footnote{Løst oversat fra \href{https://en.wikipedia.org/wiki/Rollover_(key)}{Wikipedia}: \textit{Ghosting og key-jamming} er i dette tilfælde et udtryk for når brugerinput bliver blokeret, typisk grundet flere simultane input pga. såkaldt \textit{anti-ghosting teknologi} som skal forhindre matrix-keyboard i at aktivere et fjerde input ved tre simultane input. Key-jamming er så en konsekvens af dette.}
+	En lille udfordring med hensyn til slangens opførsel i forhold til den nye struktur, hvor slangen animeres flydende, var at man ved en hurtig kombination af tryk på piletasterne kunne få slangen til at dø, da denne kombination havde en tendens til at omgå vores metode tjek til ikke at kunne bevæge sig i en strengt modsatrettet bevægelse. Derfor var vi nødsaget til at ændre lidt på den måde slangen ændrer retning på hvilket i nogle tilfælde, især hvor tempoet er højt, medførte et fænomen kendt som \textit{ghosting og key-jamming} \footnote{Løst oversat fra \href{https://en.wikipedia.org/wiki/Rollover_(key)}{Wikipedia}: \textit{Ghosting og key-jamming} er i dette tilfælde et udtryk for når brugerinput bliver blokeret, typisk grundet flere simultane input pga. såkaldt \textit{anti-ghosting teknologi} som skal forhindre matrix-keyboard i at aktivere et fjerde input ved tre simultane input. Key-jamming er så en konsekvens af dette.}
 	
 	\subsection{Musik og lyd effekter}
 	
-	Musik og lyd effekter er implementeres ved hjælp af \textit{javafx.scene.media.MediaPlayer} og håndteres centralt i \textit{SoundController}. Denne klasse, hvis primære opgave er at afspille baggrundsmusikken, vil der ikke gås yderligere i detaljer med udover at selve afspilningen af lydeffekter sker ved et kald til \textit{PlaySoundEffect(Media\footnote{javafx.scene.media.Media})} der instantierer et objekt af typen \textit{javafx.scene.media.MediaPlayer} hvorved indholdet kan afspilles. Denne klassen søges op ved sædvanlig metode ved hjælp af sit alias og et kald til den nedarvede metode \textit{Child(String)} da klassen der foretager dette kald er af typen \textit{View}.
+	Musik- og lydeffekter er implementeres ved hjælp af \textit{javafx.scene.media.MediaPlayer} og håndteres centralt i \textit{SoundController}. Denne klasse, hvis primære opgave er at afspille baggrundsmusikken, vil der ikke gås yderligere i detaljer med udover at selve afspilningen af lydeffekter sker ved et kald til \textit{PlaySoundEffect(Media\footnote{javafx.scene.media.Media})} der instantierer et objekt af typen \textit{javafx.scene.media.MediaPlayer} hvorved indholdet kan afspilles. Denne klassen søges op ved sædvanlig metode ved hjælp af sit alias og et kald til den nedarvede metode \textit{Child(String)} da klassen der foretager dette kald er af typen \textit{View}.
 	
 	\subsection{Kommandolinje argumenter og centralisering af objekt egenskaber}
 	
-	Selve objekternes egenskaber er nu blevet placeret i en klasse bestående af rene statiskte egenskaber, og en enkel statisk metode til behandling af kommandolinje parametre. Dette har reduceret lidt kode og på den måde er det også blevet muligt at sætte basale egenskaber som slangens farve og banens dimensioner ved hjælp af kommandolinje argumenter.  
+	Selve objekternes egenskaber er nu blevet placeret i en klasse bestående af rene statiske egenskaber, og en enkel statisk metode til behandling af kommandolinje parametre. Dette har reduceret lidt kode og gjordt det muligt at sætte basale egenskaber som slangens farve og banens dimensioner ved hjælp af kommandolinje argumenter.  
 	
-
-\section{Evaluering og forslag til forbedringer}
-
-Et af de helt store udfordringer har helt klart været i forbindelse med slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde, udføes operationer oftest ud fra meget vanskelige værdier og ved tjek af kollisioner rundes der derfor ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}. \\
-
-I den avancerede variant, \textit{AdvancedSnake}, kunne der godt være udviklet et mere færdig menustruktur baseret på en grafisk brugergræsneflade hvor diverse indstillinger kunne sættes ved afkrydsningfelter og kombi-bokse, i ssedet for den nuværende form hvor disse sættes via kommandolinje parametre. \\
-
-Vi kunne derudover også, hvis tiden var til det, havde udviklet videre på selve slangens opførsel i form af animerede bevægelse. I stedet for den lineære bevægelse i vore varianter, kunne vi godt havde tænkt os, at slangen nærmest \textit{"slangede"} sig frem i en zig-zag bevægelse. Selve designet af slangen indeholder også meget forbedringspotentiale og havde helt sikkert været det næste trin hvis tiden havde været til det. \\
-
-Selve slangens indtræden og udtræden af banen har også nogle små \textit{issues} i form af brat stop hvor det ikke ser ud til at den går ind i væggen, igen et tidsproblem er helt sikkert kunne løses ved at fortsætte tegningen af slangens elementer et stykke ud fra banen.
-
-
-\section{Konklusion}
-
-Vi har udviklet et \textit{SimpleSnake} spil der lever op til kravene vi har stillet. Derudover har vi også produceret en udvidet version med forbedringer i brugeroplevelsen så som flydende animation, automatisk bevægelse, splash screen og lyd effekter. 
-Vi har derudover også lavet spillet så det overholder vores ønsker om simplicitet og uniformitet i det at selve spillets gang udføres ved simple tastetryk og selve den visuelle brugerflade opsættes relativt til skærmstørrelsen. Dette er med til at sikre en uniform oplevelse på tværs af skærmstørrelser hvilket var vores oprindelige mål. 
-
-\begin{thebibliography}{2}
-	\bibitem{1}
-	Musik og lyd effekter er hentet fra følgende hjemmeside: \href{http://www.wolfensteingoodies.com/archives/olddoom/music.htm}{Wolfensteingoodies.com}
-	\bibitem{2}
-	Alle billeder benyttet i dette dokument er hentet fra google.
-\end{thebibliography}
-
-\pagebreak
-\begin{figure}[h!]
-	\centering
-	\includegraphics[width=250px]{Structural_diagram.jpg}
-	\label{fig:structure}
-	\caption{Overordnet struktur}
-\end{figure}
-
+	
+	\section{Evaluering}
+	
+	En af de helt store udfordringer har helt klart været i forbindelse med slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter-dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde, udføres operationer oftest ud fra meget vanskelige værdier og ved tjek af kollisioner rundes der derfor ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}. \\
+	
+	\subsection{Forslag til forbedringer}
+	I den avancerede variant, \textit{AdvancedSnake}, kunne der godt være udviklet et mere færdig menustruktur baseret på en grafisk brugergræsneflade hvor diverse indstillinger kunne sættes ved afkrydsningfelter og kombi-bokse, i stedet for den nuværende form hvor disse sættes via kommandolinje parametre. \\
+	
+	Vi kunne derudover også, hvis tiden var til det, havde udviklet videre på selve slangens opførsel i form af animerede bevægelse. I stedet for den lineære bevægelse i vore varianter, kunne vi godt havde tænkt os, at slangen nærmest \textit{"slangede"} sig frem i en zig-zag bevægelse. Selve designet af slangen indeholder også meget forbedringspotentiale og havde helt sikkert været det næste trin hvis tiden havde været til det. \\
+	
+	Selve slangens indtræden og udtræden af banen har også nogle små \textit{issues} i form af brat stop hvor det ikke ser ud til at den går ind i væggen, igen et tidsproblem er helt sikkert kunne løses ved at fortsætte tegningen af slangens elementer et stykke ud fra banen.
+	
+	
+	\section{Konklusion}
+	
+	Vi har udviklet et \textit{SimpleSnake} spil der lever op til kravene vi har stillet. Derudover har vi også produceret en udvidet version med forbedringer i brugeroplevelsen så som flydende animation, automatisk bevægelse, splash screen og lyd effekter. 
+	Vi har derudover også lavet spillet så det overholder vores ønsker om simplicitet og uniformitet i det at selve spillets gang udføres ved simple tastetryk og selve den visuelle brugerflade opsættes relativt til skærmstørrelsen. Dette er med til at sikre en uniform oplevelse på tværs af skærmstørrelser hvilket var vores oprindelige mål. 
+	
+	\begin{thebibliography}{2}
+		\bibitem{1}
+		Musik- og lydeffekter er hentet fra følgende hjemmeside: \href{http://www.wolfensteingoodies.com/archives/olddoom/music.htm}{Wolfensteingoodies.com}
+		\bibitem{2}
+		Alle billeder benyttet i dette dokument er hentet fra google.
+	\end{thebibliography}
+	
+	\pagebreak
+	\begin{figure}[h!]
+		\centering
+		\includegraphics[width=250px]{Structural_diagram.jpg}
+		\label{fig:structure}
+		\caption{Overordnet struktur}
+	\end{figure}
+	
 \end{document}          
