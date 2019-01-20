@@ -65,6 +65,8 @@ Selve kravet til  vores applikation \textit{Snake}, er foruden de angivne kravsp
 
 \section{Ansvars fordeling}
 
+Projektet er udarbejdet i fællesskab uden nærmere definerede ansvarsområder. Det hele er sket i samråd med hinanden og vi har hver især bidraget til design og implementation.
+
 \section{Overordnet design og overvejelserne bag}
 
 Et af udfordringerne ved design af et program og dens dertilhørende kode, omhandler forruden den visuelle del af programmet også den bagved liggende struktur (selve implementationen). Vi ønskede et design hvor der var fokus på simplicitet og uniformitet. Det første giver sig udtryk i vores opdeling af kodestrukturen, en opdeling der kommer til udtryk ved benyttelsen af såkaldte \textit{Kits}. Et \textit{Kit} er bare vores udtryk for en \textit{package}\footnote{En java package er et domæne bestående af et eller flere klasser og for dem med kendskab til c++ kan der henføres til namespace som benyttes til at kende forskel på de forskellige klasser I de tilfælde de deler samme navn.} hvor vi inddeler vores program i nogle forskellige lag. Det første lag danner fundamentet for alle vores klasser og forefindes i \textit{BaseKit}, det er for at sige det på jævnt sprog, applikationens maskinrum. Hele ideen er at indkapsle maskinrummet fra design delen for på den måde at gøre det mere simpelt at designe og implementere de enkelte dele. De to vigtigste klasser i dette \textit{Kit} er \textit{Object} og \textit{View} hvorved den sidste står for at håndtere brugerinput, position, dimension og tegning af grænseflade. Den første del tager sig så af meta-information og et koncept vi kalder \textit{Parent and Child}, som vil omtales i det næste kapitel.
@@ -92,7 +94,7 @@ Slangen repræsenteres af \textit{SnakeObject} og består i bund og grund af en 
 
 \section{Struktur og rollefordelinger}
 
-I den her sektion beskrives computerspillets polyformi og brug af nedarvning. Derudover redegøres der for de forskellige klassers roller og funktioner, og specielt brugen af threading omtales, da dette spiller en fundamental rolle i afviklingen af computerspillet Snake\footnote{Her refereres både til den simple variant, \textit{SimpleSnake}, og den mere avancerede del, \textit{AdvancedSnake}.}.
+I den her sektion beskrives computerspillets polyformi og brug af nedarvning. Derudover redegøres der for de forskellige klassers roller og funktioner, og specielt brugen af threading omtales, da dette spiller en fundamental rolle i afviklingen af computerspillet Snake\footnote{Her refereres både til den simple variant, \textit{SimpleSnake}, og den mere avancerede del, \textit{AdvancedSnake}.}. For en oversigt over hele applikationens struktur henvises til figuren "\textit{\hyperref[fig:structure]{Overordnet struktur}}" som kan findes på sidste side.
 Selve spillet er opdelt i to dele, nærmere betegnet indeholder det to såkaldte pakker , BaseKit og MainKit. Den første udgør spillets fundament, da de fleste klasser i pakken \textit{MainKit} er nedarvet fra klasser i \textit{BaseKit} og sørger for grundfunktionaliteten i programmet. Det vil omtales i detaljer i den næste sektion hvor der vil gås nærmere ind på de forskellige abstraktionslag i Snake med hensyn til indhold og anvendelse af dette, specielt i forhold til objekternes indbyrdes kommunikation. Den følgende illustration viser programmets polyformiske struktur inddelt i de to abstraktionsniveauer:
 
 \begin{figure}[h!]
@@ -175,10 +177,10 @@ En anden illustration kan betragtes her hvor klasserne er inddelt i de forskelli
 
 \section{Den avancerede variant af \textit{Snake}}
 
-I den avancerede udgave \textit{Snake} er den oprindelige kravspecifikation blevet udvidet og vi har fået frie tøjler til at designe en variant af \textit{SimpleSnake} efter egne ønsker. Denne variant vil dog ikke omfattes af vores konklusion og denne rapport afsætter derfor dette kapitel til beskrivelse af implementation og design af denne variant.  
+I den avancerede udgave af \textit{SimpleSnake}, som nu omtales \textit{AdvancedSnake}, er den oprindelige kravspecifikation blevet udvidet og vi har fået frie tøjler til at designe en variant af \textit{SimpleSnake} efter egne ønsker. 
 
 \subsection{Nye elementer}
-I den avancerede udgave af \textit{SimpleSnake} bliver følgende tilføjet:
+I \textit{AdvancedSnake} er følgende blevet tilføjet:
 \begin{itemize}
 	\item Splash screen \\
 	En simpel intro skærm hvor brugeren trykker sig videre til selve spillet.
@@ -229,19 +231,21 @@ I den avancerede udgave af \textit{SimpleSnake} bliver følgende tilføjet:
 
 \section{Udfordringer og endelig evaluering af produkt}
 
-Et af de helt store udfordringer har helt klart været i forbindelse slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde. Det giver nogle meget grimme værdier og ved tjek af kollisioner rundes der ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}.
+Et af de helt store udfordringer har helt klart været i forbindelse med slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde, udføes operationer oftest ud fra meget vanskelige værdier og ved tjek af kollisioner rundes der derfor ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}.
 
 
 \section{Konklusion}
 
-
+Vi har udviklet et \textit{SimpleSnake} spil der lever op til kravene vi har stillet. Derudover har vi også produceret en udvidet version med forbedringer i brugeroplevelsen så som flydende animation, automatisk bevægelse, splash screen og lyd effekter. 
+Vi har derudover også lavet spillet så det overholder vores ønsker om simplicitet og uniformitet i det at selve spillets gang udføres ved simple tastetryk og selve den visuelle brugerflade opsættes relativt til skærmstørrelsen. Dette er med til at sikre en uniform oplevelse på tværs af skærmstørrelser hvilket var vores oprindelige mål. 
 
 
 \pagebreak
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=\linewidth]{Structural_diagram.jpg}
-	\label{fig:structure}5
+	\includegraphics[width=250px]{Structural_diagram.jpg}
+	\label{fig:structure}
+	\caption{Overordnet struktur}
 \end{figure}
 
 \end{document}          
