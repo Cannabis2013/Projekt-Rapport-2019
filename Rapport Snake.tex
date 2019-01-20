@@ -229,9 +229,15 @@ I \textit{AdvancedSnake} er følgende blevet tilføjet:
 	Selve objekternes egenskaber er nu blevet placeret i en klasse bestående af rene statiskte egenskaber, og en enkel statisk metode til behandling af kommandolinje parametre. Dette har reduceret lidt kode og på den måde er det også blevet muligt at sætte basale egenskaber som slangens farve og banens dimensioner ved hjælp af kommandolinje argumenter.  
 	
 
-\section{Udfordringer og endelig evaluering af produkt}
+\section{Evaluering og forslag til forbedringer}
 
-Et af de helt store udfordringer har helt klart været i forbindelse med slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde, udføes operationer oftest ud fra meget vanskelige værdier og ved tjek af kollisioner rundes der derfor ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}.
+Et af de helt store udfordringer har helt klart været i forbindelse med slangens position relativt til spillerfladen. Det er primært udfordringer relateret til afrundinger af koordinater grundet den måde vi har designet og implementeret gitteret på. Da banens gitter dimensioner, og de indeholdte kvadrater, er skaleret relativt ud fra skærmens højde, udføes operationer oftest ud fra meget vanskelige værdier og ved tjek af kollisioner rundes der derfor ned til to decimaler. Især animationerne var udfordrende da der her blev stillet høje krav til præcisionen af koordinaterne, noget vi løste ved at omregne fra globale koordinater til relative koordinater\footnote{Ved globale koordinater tænkes der på spillerfladens koordinater, og ved relative menes koordinater i rækker og søjler.}. \\
+
+I den avancerede variant, \textit{AdvancedSnake}, kunne der godt være udviklet et mere færdig menustruktur baseret på en grafisk brugergræsneflade hvor diverse indstillinger kunne sættes ved afkrydsningfelter og kombi-bokse, i ssedet for den nuværende form hvor disse sættes via kommandolinje parametre. \\
+
+Vi kunne derudover også, hvis tiden var til det, havde udviklet videre på selve slangens opførsel i form af animerede bevægelse. I stedet for den lineære bevægelse i vore varianter, kunne vi godt havde tænkt os, at slangen nærmest \textit{"slangede"} sig frem i en zig-zag bevægelse. Selve designet af slangen indeholder også meget forbedringspotentiale og havde helt sikkert været det næste trin hvis tiden havde været til det. \\
+
+Selve slangens indtræden og udtræden af banen har også nogle små \textit{issues} i form af brat stop hvor det ikke ser ud til at den går ind i væggen, igen et tidsproblem er helt sikkert kunne løses ved at fortsætte tegningen af slangens elementer et stykke ud fra banen.
 
 
 \section{Konklusion}
